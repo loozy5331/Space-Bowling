@@ -59,7 +59,7 @@ $(document).ready(function() {
 		// platform variables
 		platformX = canvasWidth / 2;
 		platformY = 150;
-		platformWidth = 200; 
+		platformWidth = 300; 
 		platformHeight = canvasHeight - 30;
 		platformOuterRadius = 150;
 		platformInnerRadius = 75;
@@ -227,7 +227,7 @@ $(document).ready(function() {
 		// platform
 		context.fillStyle = "rgb(210,105,30)";
 		context.beginPath();
-		context.fillRect(50, 30, platformWidth + 50, platformHeight); // 레일 
+		context.fillRect(50, 30, platformWidth - 50, platformHeight); // 레일 
 		context.closePath();
 		context.fill();
 
@@ -242,8 +242,18 @@ $(document).ready(function() {
 			context.stroke();
 		}
 
-		// 
+		// holls
+		context.fillStyle = "rgb(100,10,0)";
+		context.beginPath();
+		context.fillRect(0, 30, 50, platformHeight+30); // 레일 
+		context.closePath();
+		context.fill();
 
+		context.fillStyle = "rgb(100,10,0)";
+		context.beginPath();
+		context.fillRect(platformWidth, 30, platformWidth + 50, platformHeight+30); // 레일 
+		context.closePath();
+		context.fill();
 
 		// aiming line
 		if (playerSelected) 
@@ -290,8 +300,6 @@ $(document).ready(function() {
 			};
 		};	
 
-		// asteroids
-		context.fillStyle = "rgb(255, 255, 255)"; // balls configure
 
 		var deadAsteroids = new Array();
 
@@ -300,7 +308,10 @@ $(document).ready(function() {
 		for (var i = 0; i < asteroidsLength; i++) // 공들끼리 영향을 주는 것을 반영
 		{
 			var tmpAsteroid = asteroids[i];
-
+			context.fillStyle = "rgb(255, 255, 255)"; // pin color
+			if(tmpAsteroid.player){
+				context.fillStyle = "rgb(0,191,255)";	// ball color
+			}
 			for (var j = i+1; j < asteroidsLength; j++) 
 			{
 				var tmpAsteroidB = asteroids[j];
@@ -368,11 +379,23 @@ $(document).ready(function() {
 			};
 
 			// check if asteroid is off the platform
+			if(tmpAsteroid.player)
+			{
+				if(tmpAsteroid.x <= 25){
+					tmpAsteroid.x = 25;
+					tmpAsteroid.vX = 0;
+				}
+				if(tmpAsteroid.x >= platformX + 150){
+					tmpAsteroid.x = platformX + 150;
+					tmpAsteroid.vX = 0;
+				}
+
+			}
+
 			if (!tmpAsteroid.player) 
 			{
 				var dXp = tmpAsteroid.x - platformX;
 				var dYp = tmpAsteroid.y - platformY;
-				//var distanceP = Math.sqrt((dXp*dXp)+(dYp*dYp));
 				if (Math.abs(dXp) > 125 || Math.abs(dYp) > 120) 
 				{
 					if (tmpAsteroid.radius > 0) 
@@ -393,6 +416,23 @@ $(document).ready(function() {
 			context.arc(tmpAsteroid.x, tmpAsteroid.y, tmpAsteroid.radius, 0, Math.PI*2, true);
 			context.closePath();
 			context.fill();
+			if(!tmpAsteroid.player){
+				if(tmpAsteroid.radius -6 >= 0 ){	
+					context.fillStyle = "rgb(255,0,0)";
+					context.beginPath();
+					context.arc(tmpAsteroid.x, tmpAsteroid.y, tmpAsteroid.radius -6, 0, Math.PI*2, true);
+					context.closePath();
+					context.fill();
+				}
+				if(tmpAsteroid.radius -7 >= 0){
+					context.fillStyle = "rgb(255,255,255)";
+					context.beginPath();
+					context.arc(tmpAsteroid.x, tmpAsteroid.y, tmpAsteroid.radius -7, 0, Math.PI*2, true);
+					context.closePath();
+					context.fill();
+				}
+			}
+			
 		};		
 
 		// splice dead asteroids
