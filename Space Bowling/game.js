@@ -93,16 +93,17 @@ $(document).ready(function() {
 
 		// creates the player object as the first asteroid
 		playerOriginalX = canvasWidth/2;
-		playerOriginalY = canvasHeight-150;
-		player = new Asteroid(playerOriginalX, playerOriginalY, pRadius, pMass, pFriction);
-		player.player = true;
+		playerOriginalY = canvasHeight-150; // 아래서부터
+		player = new Asteroid(playerOriginalX, playerOriginalY, pRadius, pMass, pFriction); // 사용자가 사용하는 볼링공
+		player.player = true; 
 		asteroids.push(player);
 
-		var outerRing = 8; // Asteroids around outer ring
-		var ringCount = 3; // number of rings
-		var ringSpacing = (platformInnerRadius/(ringCount - 1)); // distance between each ring
+		var outerRing = 8; // 겉으로 둘러싼 공들의 갯수
+		var ringCount = 3; // 안 쪽으로 몇 줄
+		var ringSpacing = (platformInnerRadius/(ringCount - 1)); // 공들 사이의 직선거리
 
 		// ring positioning and asteroid creation
+		// 볼링 핀 배치
 		for(var r = 0; r < ringCount; r++)
 		{
 			var currentRing = 0; // asteroids around current ring
@@ -151,7 +152,7 @@ $(document).ready(function() {
 		// on mouseDown, start the game
 		$(window).mousedown(function(e) 
 		{
-			if (!playerSelected && player.x == playerOriginalX && player.y == playerOriginalY) 
+			if (!playerSelected && player.x == playerOriginalX && player.y == playerOriginalY) // 맨 처음 위치에서만 움직일 수 있음.
 			{
 				var canvasOffset = canvas.offset();
 				var canvasX = Math.floor(e.pageX-canvasOffset.left);
@@ -164,7 +165,7 @@ $(document).ready(function() {
 				var dX = player.x-canvasX;
 				var dY = player.y-canvasY;
 				var distance = Math.sqrt((dX*dX)+(dY*dY));
-				var padding = 5;
+				var padding = 5; // 반지름
 				if (distance < player.radius+padding) 
 				{
 					powerX = player.x;
@@ -184,7 +185,7 @@ $(document).ready(function() {
 				var dX = canvasX-player.x;
 				var dY = canvasY-player.y;
 				var distance = Math.sqrt((dX*dX)+(dY*dY));
-				if (distance*playerVelocityDampener < playerMaxAbsVelocity) 
+				if (distance*playerVelocityDampener < playerMaxAbsVelocity) // 거리에 따라서 속도가 달라짐 + 속도 제한이 있음.
 				{
 					powerX = canvasX;
 					powerY = canvasY;
@@ -192,7 +193,7 @@ $(document).ready(function() {
 				} 
 				else 
 				{
-					var ratio = playerMaxAbsVelocity/(distance*playerVelocityDampener);
+					var ratio = playerMaxAbsVelocity/(distance*playerVelocityDampener); // 삼각함수
 					powerX = player.x+(dX*ratio);
 					powerY = player.y+(dY*ratio);
 					power = 100;
@@ -260,7 +261,7 @@ $(document).ready(function() {
 		// aiming line
 		if (playerSelected) 
 		{
-			context.strokeStyle = "rgb(255, 255, 255)";
+			context.strokeStyle = "rgb(255, 255, 255)"; // bar configure
 			context.lineWidth = 3;
 			context.beginPath();
 			context.moveTo(player.x, player.y);
@@ -270,7 +271,7 @@ $(document).ready(function() {
 
 			context.fillStyle = "rgb(255, 255, 255)";
 			context.font = 'normal 20pt Lobster'
-			context.fillText("power: " + power, 10, 560);
+			context.fillText("power: " + power, 10, 560); // Text의 위치와 내용
 			if (playerAngle <= 90 && playerAngle >= -90)
 			{
 				context.fillText("angle: " + playerAngle + "°", 10, 580);				
@@ -278,7 +279,7 @@ $(document).ready(function() {
 
 		};
 		// boundary check
-		if (player.x != playerOriginalX && player.y != playerOriginalY) 
+		if (player.x != playerOriginalX && player.y != playerOriginalY) // 볼링 공이 범위를 벗어나면 다시 초기화
 		{
 			if (player.vX == 0 && player.vY == 0) 
 			{
@@ -303,13 +304,13 @@ $(document).ready(function() {
 		};	
 
 		// asteroids
-		context.fillStyle = "rgb(255, 255, 255)";
+		context.fillStyle = "rgb(255, 255, 255)"; // balls configure
 
 		var deadAsteroids = new Array();
 
 		var asteroidsLength = asteroids.length;
 
-		for (var i = 0; i < asteroidsLength; i++) 
+		for (var i = 0; i < asteroidsLength; i++) // 공들끼리 영향을 주는 것을 반영
 		{
 			var tmpAsteroid = asteroids[i];
 
@@ -368,7 +369,7 @@ $(document).ready(function() {
 			} 
 			else 
 			{
-				tmpAsteroid.vX = 0;
+				tmpAsteroid.vX = 0; // 일정 속도 이하면 정지
 			};
 			if (Math.abs(tmpAsteroid.vY) > 0.1) 
 			{
@@ -411,7 +412,7 @@ $(document).ready(function() {
 			for (var di = 0; di < deadAsteroidsLength; di++) 
 			{
 				var tmpDeadAsteroid = deadAsteroids[di];
-				asteroids.splice(asteroids.indexOf(tmpDeadAsteroid), 1);
+				asteroids.splice(asteroids.indexOf(tmpDeadAsteroid), 1); // 배열에 요소 제거
 			};
 		};
 
