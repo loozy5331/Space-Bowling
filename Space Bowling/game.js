@@ -59,7 +59,9 @@ $(document).ready(function() {
 		// platform variables
 		platformX = canvasWidth / 2;
 		platformY = 150;
-		platformOuterRadius = 100;
+		platformWidth = 200; 
+		platformHeight = canvasHeight - 30;
+		platformOuterRadius = 150;
 		platformInnerRadius = 75;
 
 		// asteroid object
@@ -87,7 +89,7 @@ $(document).ready(function() {
 		playerAngle = 0;
 		score = 0;
 
-		var pRadius = 15;
+		var pRadius = 20;
 		var pMass = 10;
 		var pFriction = 0.97;
 
@@ -98,57 +100,28 @@ $(document).ready(function() {
 		player.player = true; 
 		asteroids.push(player);
 
-		var outerRing = 8; // 겉으로 둘러싼 공들의 갯수
-		var ringCount = 3; // 안 쪽으로 몇 줄
-		var ringSpacing = (platformInnerRadius/(ringCount - 1)); // 공들 사이의 직선거리
-
-		// ring positioning and asteroid creation
+		var ballsX = [-70, -24, 24, 70, -45, 0, 45, -20, 20, 0];
+		var ballsY = [-70, -70, -70, -70, -40, -40, -40, -10, -10, 25];
+		
 		// 볼링 핀 배치
-		for(var r = 0; r < ringCount; r++)
+		for(var n = 0; n < ballsX.length; n++)
 		{
-			var currentRing = 0; // asteroids around current ring
-			var angle = 0; // angle between each asteroid
-			var ringRadius = 0;
-
-			// is this the innermost ring
-			if (r == ringCount - 1)
-			{
-				currentRing = 1;
-			}
-			else
-			{
-				currentRing = outerRing-(r * 3);
-				angle = 360 / currentRing;
-				ringRadius = platformInnerRadius - (ringSpacing * r);
-			};
-			// asteroid creation
-			for (var a = 0; a < currentRing; a++)
-			{
 				var x = 0;
 				var y = 0;
 
-				// is this the innermost ring
-				if (r == ringCount - 1)
-				{
-					x = platformX;
-					y = platformY;
-				}
-				else
-				{
-					x = platformX + (ringRadius * Math.cos((angle * a) * (Math.PI / 180)));
-					y = platformY + (ringRadius * Math.sin((angle * a) * (Math.PI / 180)));
-				};
+				x = platformX + ballsX[n];
+				y = platformY + ballsY[n];
 
-				var radius  = 10;
+				var radius  = 15;
 				var mass = 5;
 				var friction = 0.95;
 
 				asteroids.push(new Asteroid(x, y, radius, mass, friction));
-			};
-
-			// score count
-			uiRemaining.html(asteroids.length - 1);
+				
+				uiRemaining.html(asteroids.length - 1);// score count
 		};
+
+			
 		// on mouseDown, start the game
 		$(window).mousedown(function(e) 
 		{
@@ -252,11 +225,25 @@ $(document).ready(function() {
 		// DRAW
 
 		// platform
-		context.fillStyle = "rgb(100, 100, 100)";
+		context.fillStyle = "rgb(210,105,30)";
 		context.beginPath();
-		context.arc(platformX, platformY, platformOuterRadius, 0, Math.PI*2, true);
+		context.fillRect(50, 30, platformWidth + 50, platformHeight); // 레일 
 		context.closePath();
 		context.fill();
+
+		// platform lines
+		for(var line=50;line < platformWidth + 100;line += 30){
+			context.strokeStyle = "rgb(0, 0, 0)";
+			context.lineWidth = 3;
+			context.beginPath();
+			context.moveTo(line, 30);
+			context.lineTo(line, canvasHeight);
+			context.closePath();
+			context.stroke();
+		}
+
+		// 
+
 
 		// aiming line
 		if (playerSelected) 
@@ -385,8 +372,8 @@ $(document).ready(function() {
 			{
 				var dXp = tmpAsteroid.x - platformX;
 				var dYp = tmpAsteroid.y - platformY;
-				var distanceP = Math.sqrt((dXp*dXp)+(dYp*dYp));
-				if (distanceP > platformOuterRadius) 
+				//var distanceP = Math.sqrt((dXp*dXp)+(dYp*dYp));
+				if (Math.abs(dXp) > 125 || Math.abs(dYp) > 120) 
 				{
 					if (tmpAsteroid.radius > 0) 
 					{
@@ -397,6 +384,9 @@ $(document).ready(function() {
 						deadAsteroids.push(tmpAsteroid);
 					};
 				};
+			};
+			if(tmpAsteroid.radius <= 0){
+				tmpAsteroid.radius = 0;
 			};
 
 			context.beginPath();
